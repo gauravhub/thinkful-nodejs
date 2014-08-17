@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Shopping List</title>
+   <script src="http://code.jquery.com/jquery-2.1.1.js"></script>
+   <script type="text/javascript">
+      function destroy(i) {
+         debugger;
+         var deleteUrl = "/" + i;
+         if (confirm('Are you sure you want to delete?')) {
+            $.ajax({
+                     url: deleteUrl,
+                     type: 'DELETE',
+                     success: function(result) {
+                        window.location.href = "/";
+                     },
+                     error: function(data, errorMsg) {
+                        alert('operation failed :' + errorMsg);
+                     }
+             });
+         }
+      }
+      
+      function edit(i) {
+         debugger;
+         var updatedValue = prompt('Enter new value');
+         if(updatedValue) {
+         var editUrl = "/" + i;
+            $.ajax({
+                     url: editUrl,
+                     type: 'PUT',
+                     data: {item: updatedValue},
+                     success: function(result) {
+                        window.location.href = "/";
+                     },
+                     error: function(data, errorMsg) {
+                        alert('operation failed :' + errorMsg);
+                     }
+                  });
+         }
+      }
+   </script>
+</head>
+<body>
+   <ol>
+   <% for(var i=0; i<model.length; i++) {%>
+      <li>
+         <%= model[i] %>
+         <input type="button" value="Edit" onclick="edit(<%=i%>)">
+         <input type="button" value="Delete" onclick="destroy(<%=i%>)">
+      </li>
+   <% } %>
+   </ol>   
+   <form action="/" method="post">
+      <input type="text" name="item" placeholder="Enter an item" required>
+      <button>Add Item</button>
+   </form>
+</body>
+</html>
