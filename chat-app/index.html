@@ -15,20 +15,36 @@
   </head>
   <body>
     <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+    <div id="user">
+        <input autocomplete="off" placeholder="Enter nickname" id="nickname" /><button id="btnJoin">Join</button>
+    </div>
+    <div id="chatRoom">
+      <form action="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+      </form>
+    </div>
     <script src="//code.jquery.com/jquery-1.11.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io();
+      var socket;
+      var nickname; 
+      $(function () {
+        $('#chatRoom').hide();
+        $('#btnJoin').click(function () {
+          nickname = $('#nickname').val();
+          $('#chatRoom').show();
+          $('#user').hide();
+          socket = io.connect(window.location.origin, { query: 'nickname=' + nickname })
+          socket.on('chat message', function(msg){
+            $('#messages').append($('<li>').text(msg));
+          });
+        });
+      });
+      
       $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
+        socket.emit('chat message', nickname + ": " + $('#m').val());
         $('#m').val('');
         return false;
-      });
-      socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
       });
     </script>
   </body>
